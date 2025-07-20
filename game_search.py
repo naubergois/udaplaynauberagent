@@ -6,8 +6,7 @@ from lib.vector_db import VectorStoreManager, CorpusLoaderService
 
 def main():
     load_dotenv()
-    api_key = os.getenv("CHROMA_OPENAI_API_KEY") or os.getenv("OPENAI_API_KEY")
-    manager = VectorStoreManager(api_key, persist_directory="chromadb")
+    manager = VectorStoreManager(persist_directory="chromadb")
     loader = CorpusLoaderService(manager)
 
     store = loader.load_games("udaplay", "games")
