@@ -1,4 +1,5 @@
 from typing import List, Optional, Dict, Any, Union
+import os
 from typing_extensions import TypedDict
 try:
     import chromadb
@@ -170,8 +171,12 @@ class VectorStoreManager:
         self.embedding_function = self._create_embedding_function(model_name)
 
     def _create_embedding_function(self, model_name: str) -> EmbeddingFunction:
-        return embedding_functions.SentenceTransformerEmbeddingFunction(
-            model_name=model_name
+        api_key = os.getenv("OPENAI_API_KEY")
+        if not api_key:
+            raise ValueError("Missing OPENAI_API_KEY environment variable")
+        return embedding_functions.OpenAIEmbeddingFunction(
+            api_key=api_key,
+            model_name=model_name,
         )
 
     def __repr__(self):
