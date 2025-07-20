@@ -36,7 +36,18 @@ def retrieve_game(query: str) -> List[Dict]:
     if chromadb is None:  # pragma: no cover - dependency unavailable
         return []
 
-    client = chromadb.PersistentClient(path="chromadb")
+    server_url = os.getenv("CHROMA_URL")
+    if server_url:
+        try:
+            from urllib.parse import urlparse
+            parsed = urlparse(server_url)
+            host = parsed.hostname or "localhost"
+            port = parsed.port or 8000
+            client = chromadb.HttpClient(host=host, port=port, ssl=parsed.scheme == "https")
+        except Exception:
+            client = chromadb.HttpClient(server_url)
+    else:
+        client = chromadb.PersistentClient(path="chromadb")
     collection = client.get_collection("udaplay")
     result = collection.query(query_texts=[query], n_results=3, include=["documents", "metadatas"])
     documents = result.get("documents", [[]])[0]
