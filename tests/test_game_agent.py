@@ -1,6 +1,9 @@
 import importlib
 import sys
+import os
 import types
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 
 def test_game_agent_runs(monkeypatch):
@@ -23,6 +26,11 @@ def test_game_agent_runs(monkeypatch):
         chat=types.SimpleNamespace(completions=DummyCompletion)
     )
     monkeypatch.setitem(sys.modules, "openai", dummy)
+
+    # Reload dependencies to ensure patched openai is used
+    importlib.invalidate_caches()
+    if "lib.llm" in sys.modules:
+        importlib.reload(sys.modules["lib.llm"])
 
     ga = importlib.import_module("lib.game_agent")
     importlib.reload(ga)
