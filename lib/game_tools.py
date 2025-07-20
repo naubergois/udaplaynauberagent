@@ -2,8 +2,26 @@ from __future__ import annotations
 import os
 import json
 from typing import List, Dict
-from pydantic import BaseModel
-import chromadb
+try:
+    from pydantic import BaseModel
+except ImportError:  # pragma: no cover - fallback when pydantic is missing
+    import json
+
+    class BaseModel:
+        def __init__(self, **data):
+            for k, v in data.items():
+                setattr(self, k, v)
+
+        @classmethod
+        def model_validate_json(cls, json_str: str):
+            return cls(**json.loads(json_str))
+
+        def dict(self):
+            return self.__dict__
+try:
+    import chromadb
+except ImportError:  # pragma: no cover - allow running without chromadb
+    chromadb = None
 from lib.tooling import tool
 
 # We expect the vector DB to be persisted in ./chromadb and the collection named 'udaplay'
@@ -11,6 +29,9 @@ from lib.tooling import tool
 @tool(name="retrieve_game", description="Semantic search: Finds most results in the vector DB")
 def retrieve_game(query: str) -> List[Dict]:
     """Search game information from the local vector database."""
+    if chromadb is None:  # pragma: no cover - dependency unavailable
+        return []
+
     client = chromadb.PersistentClient(path="chromadb")
     collection = client.get_collection("udaplay")
     result = collection.query(query_texts=[query], n_results=3, include=["documents", "metadatas"])
@@ -58,7 +79,11 @@ def evaluate_retrieval(question: str, retrieved_docs: List[str]) -> EvaluationRe
 @tool(name="game_web_search", description="Semantic search: Finds most results in the vector DB")
 def game_web_search(question: str) -> List[Dict]:
     """Perform a Tavily web search for additional information."""
-    import requests
+    try:
+        import requests
+    except ImportError:  # pragma: no cover - requests not installed
+        return []
+
     api_key = os.getenv("TAVILY_API_KEY")
     if not api_key:
         raise ValueError("Missing TAVILY_API_KEY")

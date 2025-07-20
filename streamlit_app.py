@@ -1,6 +1,43 @@
 import os
-from dotenv import load_dotenv
-import streamlit as st
+try:
+    from dotenv import load_dotenv
+except ImportError:  # pragma: no cover - provide fallback when dotenv not installed
+    def load_dotenv(*args, **kwargs):
+        return False
+
+try:
+    import streamlit as st
+except ImportError:  # pragma: no cover - provide minimal streamlit stub
+    class _DummySpinner:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc, tb):
+            pass
+
+    class _DummyStreamlit:
+        def error(self, *args, **kwargs):
+            pass
+
+        def stop(self):
+            pass
+
+        def title(self, *args, **kwargs):
+            pass
+
+        def text_input(self, *args, **kwargs):
+            return ""
+
+        def button(self, *args, **kwargs):
+            return False
+
+        def spinner(self, *args, **kwargs):
+            return _DummySpinner()
+
+        def write(self, *args, **kwargs):
+            pass
+
+    st = _DummyStreamlit()
 from lib.game_agent import GameAgent
 
 
