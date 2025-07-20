@@ -118,8 +118,11 @@ project/
    dependencies:
    - On Linux/macOS: `./setup_linux.sh`
    - On Windows: `setup_windows.bat`
-2. Set up your `.env` file with necessary API keys
-3. Follow the notebooks in order:
+2. Activate the environment whenever needed:
+   - On Linux/macOS: `source .venv/bin/activate`
+   - On Windows: `activate_venv.bat`
+3. Set up your `.env` file with necessary API keys
+4. Follow the notebooks in order:
    - Complete Part 1 to set up your vector database
    - Complete Part 2 to implement the AI agent
 
