@@ -105,10 +105,12 @@ project/
 
 ## Getting Started
 
-1. Create and activate a virtual environment
-2. Install required dependencies
-3. Set up your `.env` file with necessary API keys
-4. Follow the notebooks in order:
+1. Run the setup script to create a virtual environment and install all
+   dependencies:
+   - On Linux/macOS: `./setup_linux.sh`
+   - On Windows: `setup_windows.bat`
+2. Set up your `.env` file with necessary API keys
+3. Follow the notebooks in order:
    - Complete Part 1 to set up your vector database
    - Complete Part 2 to implement the AI agent
 
