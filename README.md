@@ -91,6 +91,14 @@ TAVILY_API_KEY="YOUR_KEY"
 - Tavily
 - dotenv
 
+### Local ChromaDB Setup
+Two helper scripts are provided to install and run ChromaDB locally:
+
+- `scripts/install_chromadb_linux.sh` – for Linux environments
+- `scripts/install_chromadb_windows.ps1` – for Windows environments
+
+Running either script will install the `chromadb` Python package and launch a local server that persists data in the `chromadb` directory. Execute the script from the project root.
+
 ### Directory Structure
 ```
 project/
