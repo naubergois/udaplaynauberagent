@@ -164,10 +164,26 @@ class VectorStoreManager:
     """
 
     def __init__(self, persist_directory: str | None = None, model_name: str = "all-MiniLM-L6-v2"):
-        if persist_directory:
-            self.chroma_client = chromadb.PersistentClient(path=persist_directory)
+        """Create a ChromaDB client using env vars or local persistence."""
+        if chromadb is None:  # pragma: no cover - dependency unavailable
+            raise ImportError("chromadb package is required")
+
+        server_url = os.getenv("CHROMA_URL")
+        if server_url:
+            try:
+                from urllib.parse import urlparse
+                parsed = urlparse(server_url)
+                host = parsed.hostname or "localhost"
+                port = parsed.port or 8000
+                self.chroma_client = chromadb.HttpClient(host=host, port=port, ssl=parsed.scheme == "https")
+            except Exception:
+                self.chroma_client = chromadb.HttpClient(server_url)
         else:
-            self.chroma_client = chromadb.Client()
+            if persist_directory:
+                self.chroma_client = chromadb.PersistentClient(path=persist_directory)
+            else:
+                self.chroma_client = chromadb.Client()
+
         self.embedding_function = self._create_embedding_function(model_name)
 
     def _create_embedding_function(self, model_name: str) -> EmbeddingFunction:
