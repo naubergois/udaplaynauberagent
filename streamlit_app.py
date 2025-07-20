@@ -48,13 +48,14 @@ def check_env() -> list[str]:
 
 
 def main():
-    load_dotenv("config.env")
+    if not load_dotenv():
+        load_dotenv("config.env")
     missing = check_env()
     if missing:
         st.error(
             "Missing the following API keys: "
             + ", ".join(missing)
-            + ". Please update config.env and restart."
+            + ". Please update your .env file and restart."
         )
         st.stop()
 
