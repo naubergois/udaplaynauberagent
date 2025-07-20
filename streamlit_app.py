@@ -45,7 +45,7 @@ import contextlib
 
 def check_env() -> list[str]:
     """Return list of missing environment keys required for the agent."""
-    required = ["OPENAI_API_KEY", "TAVILY_API_KEY", "CHROMA_OPENAI_API_KEY"]
+    required = ["OPENAI_API_KEY", "TAVILY_API_KEY"]
     return [k for k in required if not os.getenv(k)]
 
 

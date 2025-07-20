@@ -47,9 +47,8 @@ UdaPlay is an AI-powered research agent for the video game industry. This projec
 ### Part 1: Offline RAG (Retrieval-Augmented Generation)
 In this part, you'll build a Vector Database using ChromaDB to store and retrieve video game information efficiently.
 
-Key tasks:
 - Set up ChromaDB as a persistent client
-- Create a collection with appropriate embedding functions
+- Create a collection using `SentenceTransformerEmbeddingFunction` for local embeddings
 - Process and index game data from JSON files
 - Each game document contains:
   - Name
@@ -80,9 +79,9 @@ Required Tools to Implement:
 Create a `.env` file with the following API keys:
 ```
 OPENAI_API_KEY="YOUR_KEY"
-CHROMA_OPENAI_API_KEY="YOUR_KEY"
 TAVILY_API_KEY="YOUR_KEY"
 ```
+ChromaDB uses local sentence-transformer embeddings so no additional API key is required.
 
 ### Project Dependencies
 - Python 3.11+
