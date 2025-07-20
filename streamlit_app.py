@@ -38,7 +38,9 @@ except ImportError:  # pragma: no cover - provide minimal streamlit stub
             pass
 
     st = _DummyStreamlit()
-from lib.game_agent import GameAgent
+from lib.game_agent import GameAgent, report_run
+import io
+import contextlib
 
 
 def check_env() -> list[str]:
@@ -60,15 +62,35 @@ def main():
         st.stop()
 
     st.title("UdaPlay Game Agent")
+
+    if "history" not in st.session_state:
+        st.session_state["history"] = []
+
+    for item in st.session_state["history"]:
+        st.write(f"**You:** {item['question']}")
+        st.write(f"**Agent:** {item['answer']}")
+        with st.expander("Debug"):
+            st.code(item["debug"])
+        st.write("---")
+
     query = st.text_input("Ask a question about video games")
     if st.button("Ask") and query:
         agent = GameAgent()
         with st.spinner("Thinking..."):
-            run = agent.invoke(query)
+            buf = io.StringIO()
+            with contextlib.redirect_stdout(buf):
+                run = agent.invoke(query)
+                report_run(run)
+            debug_output = buf.getvalue()
         final = run.get_final_state()
         answer = final.get("answer") if final else None
         if answer:
+            st.session_state["history"].append(
+                {"question": query, "answer": answer, "debug": debug_output}
+            )
             st.write(answer)
+            with st.expander("Debug"):
+                st.code(debug_output)
         else:
             st.write("No answer available.")
 
