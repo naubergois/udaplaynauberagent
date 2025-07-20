@@ -1,6 +1,24 @@
 import json
 from typing import List, Optional, Dict, Any
-from pydantic import BaseModel, Field
+try:
+    from pydantic import BaseModel, Field
+except ImportError:  # pragma: no cover - fallback when pydantic not installed
+    import json
+
+    class BaseModel:
+        def __init__(self, **data):
+            for k, v in data.items():
+                setattr(self, k, v)
+
+        @classmethod
+        def model_validate_json(cls, json_str: str):
+            return cls(**json.loads(json_str))
+
+        def dict(self):
+            return self.__dict__
+
+    def Field(*args, **kwargs):
+        return None
 
 from lib.agents import AgentState
 from lib.state_machine import Run

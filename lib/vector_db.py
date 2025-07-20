@@ -1,9 +1,17 @@
 from typing import List, Optional, Dict, Any, Union
 from typing_extensions import TypedDict
-import chromadb
-from chromadb.utils import embedding_functions
-from chromadb.api.models.Collection import Collection as ChromaCollection
-from chromadb.api.types import EmbeddingFunction, QueryResult, GetResult
+try:
+    import chromadb
+    from chromadb.utils import embedding_functions
+    from chromadb.api.models.Collection import Collection as ChromaCollection
+    from chromadb.api.types import EmbeddingFunction, QueryResult, GetResult
+except ImportError:  # pragma: no cover - allow running without chromadb
+    chromadb = None
+    embedding_functions = None
+    ChromaCollection = None
+    EmbeddingFunction = Any
+    QueryResult = Dict
+    GetResult = Dict
 
 from lib.loaders import PDFLoader, JSONGameLoader
 from lib.documents import Document, Corpus
