@@ -64,6 +64,5 @@ for file_name in tqdm(file_list, desc="Processando arquivos JSON"):
             metadatas=[clean_metadata]
         )
         print(f"✅ Adicionado com sucesso: {doc_id}")
-
     except Exception as e:
         print(f"❌ Erro ao processar {file_name}: {e}")
