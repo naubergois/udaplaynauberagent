@@ -17,18 +17,29 @@ if importlib.util.find_spec("pysqlite3") is not None:
 load_dotenv()
 
 # 📁 Diretório de persistência do ChromaDB
+
 chroma_path = "chromadb"
-if os.path.exists(chroma_path):
-    shutil.rmtree(chroma_path)
-    print("🧹 Banco ChromaDB resetado.")
+server_url = os.getenv("CHROMA_URL")
+if server_url:
+    print("🔗 Conectando ao ChromaDB remoto via CHROMA_URL...")
+    try:
+        from urllib.parse import urlparse
+        parsed = urlparse(server_url)
+        host = parsed.hostname or "localhost"
+        port = parsed.port or 8000
+        chroma_client = chromadb.HttpClient(host=host, port=port, ssl=parsed.scheme == "https")
+    except Exception:
+        chroma_client = chromadb.HttpClient(server_url)
+else:
+    if os.path.exists(chroma_path):
+        shutil.rmtree(chroma_path)
+        print("🧹 Banco ChromaDB resetado.")
+    chroma_client = chromadb.PersistentClient(path=chroma_path)
 
 # 📁 Diretório com arquivos JSON
 data_dir = "games"
 if not os.path.exists(data_dir):
     raise FileNotFoundError(f"❌ Diretório '{data_dir}' não encontrado.")
-
-# 🚀 Inicializa o cliente com persistência
-chroma_client = chromadb.PersistentClient(path=chroma_path)
 
 # 🧠 Define função de embedding via OpenAI
 embedding_fn = embedding_functions.OpenAIEmbeddingFunction(
