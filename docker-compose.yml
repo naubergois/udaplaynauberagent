@@ -1,0 +1,10 @@
+version: '3.8'
+services:
+  chromadb:
+    image: ghcr.io/chroma-core/chroma:0.4.13
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./chromadb:/chroma/chroma
+    environment:
+      IS_PERSISTENT: "TRUE"

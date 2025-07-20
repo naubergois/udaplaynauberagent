@@ -80,23 +80,24 @@ Create a `.env` file with the following API keys:
 ```
 OPENAI_API_KEY="YOUR_KEY"
 TAVILY_API_KEY="YOUR_KEY"
+CHROMA_URL="http://localhost:8000"
 ```
-ChromaDB now relies on OpenAI embeddings, so `OPENAI_API_KEY` must be configured.
-
 ### Project Dependencies
+ChromaDB now relies on OpenAI embeddings, so `OPENAI_API_KEY` must be configured.
 - Python 3.11+
 - ChromaDB
 - OpenAI
 - Tavily
 - dotenv
 
-### Local ChromaDB Setup
-Two helper scripts are provided to install and run ChromaDB locally:
+### ChromaDB Setup with Docker Compose
+A `docker-compose.yml` file is provided to run ChromaDB. Start it with:
 
-- `scripts/install_chromadb_linux.sh` – for Linux environments
-- `scripts/install_chromadb_windows.ps1` – for Windows environments
+```bash
+docker compose up -d chromadb
+```
 
-Running either script will install the `chromadb` Python package and launch a local server that persists data in the `chromadb` directory. Execute the script from the project root.
+The service listens on `http://localhost:8000` and stores data in the `chromadb` directory. Set `CHROMA_URL=http://localhost:8000` before running the project.
 
 ### Directory Structure
 ```
