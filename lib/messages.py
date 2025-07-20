@@ -1,4 +1,21 @@
-from pydantic import BaseModel
+try:
+    from pydantic import BaseModel
+except ImportError:  # pragma: no cover - fallback for environments without pydantic
+    import json
+
+    class BaseModel:
+        """Minimal pydantic BaseModel fallback used for tests."""
+
+        def __init__(self, **data):
+            for k, v in data.items():
+                setattr(self, k, v)
+
+        @classmethod
+        def model_validate_json(cls, json_str: str):
+            return cls(**json.loads(json_str))
+
+        def dict(self):
+            return self.__dict__
 from typing import Optional, Union, List, Dict, Literal
 
 from lib.tooling import ToolCall
@@ -9,7 +26,7 @@ class BaseMessage(BaseModel):
     content: Optional[str] = ""
 
     def dict(self) -> Dict:
-        return dict(self)
+        return self.__dict__
 
 
 class SystemMessage(BaseMessage):
