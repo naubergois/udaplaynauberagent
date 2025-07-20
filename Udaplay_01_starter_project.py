@@ -20,7 +20,9 @@ load_dotenv()
 
 chroma_client = chromadb.PersistentClient(path="chromadb")
 
-embedding_fn = embedding_functions.OpenAIEmbeddingFunction(api_key=os.getenv("CHROMA_OPENAI_API_KEY"))
+embedding_fn = embedding_functions.SentenceTransformerEmbeddingFunction(
+    model_name="all-MiniLM-L6-v2"
+)
 
 collection = chroma_client.get_or_create_collection(
     name="udaplay",
@@ -41,9 +43,8 @@ if not os.path.exists(data_dir):
     raise FileNotFoundError(f"Diretório '{data_dir}' não encontrado.")
 
 # Inicializa o cliente e coleção do Chroma
-embedding_fn = embedding_functions.OpenAIEmbeddingFunction(
-    api_key=os.getenv("OPENAI_API_KEY"),  # ou use diretamente a chave como string
-    model_name="text-embedding-ada-002"
+embedding_fn = embedding_functions.SentenceTransformerEmbeddingFunction(
+    model_name="all-MiniLM-L6-v2"
 )
 client = chromadb.Client()
 collection = client.get_or_create_collection(name="games", embedding_function=embedding_fn)
