@@ -1,4 +1,6 @@
 from typing import List
+import os
+import json
 import pdfplumber
 from lib.documents import Corpus, Document
 
@@ -40,4 +42,34 @@ class PDFLoader:
                             content=text
                         )
                     )
+        return corpus
+
+
+class JSONGameLoader:
+    """Load game documents from a directory of JSON files."""
+
+    def __init__(self, directory: str):
+        self.directory = directory
+
+    def load(self) -> Corpus:
+        corpus = Corpus()
+        for file_name in sorted(os.listdir(self.directory)):
+            if not file_name.endswith('.json'):
+                continue
+
+            file_path = os.path.join(self.directory, file_name)
+            with open(file_path, 'r', encoding='utf-8') as f:
+                game = json.load(f)
+
+            content = f"[{game['Platform']}] {game['Name']} ({game['YearOfRelease']}) - {game['Description']}"
+            doc_id = os.path.splitext(file_name)[0]
+
+            corpus.append(
+                Document(
+                    id=doc_id,
+                    content=content,
+                    metadata=game
+                )
+            )
+
         return corpus

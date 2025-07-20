@@ -5,7 +5,7 @@ from chromadb.utils import embedding_functions
 from chromadb.api.models.Collection import Collection as ChromaCollection
 from chromadb.api.types import EmbeddingFunction, QueryResult, GetResult
 
-from lib.loaders import PDFLoader
+from lib.loaders import PDFLoader, JSONGameLoader
 from lib.documents import Document, Corpus
 
 
@@ -154,8 +154,11 @@ class VectorStoreManager:
     - Store lifecycle management (create, get, delete)
     """
 
-    def __init__(self, openai_api_key: str):
-        self.chroma_client = chromadb.Client()
+    def __init__(self, openai_api_key: str, persist_directory: str | None = None):
+        if persist_directory:
+            self.chroma_client = chromadb.PersistentClient(path=persist_directory)
+        else:
+            self.chroma_client = chromadb.Client()
         self.embedding_function = self._create_embedding_function(openai_api_key)
 
     def _create_embedding_function(self, api_key: str) -> EmbeddingFunction:
@@ -166,6 +169,11 @@ class VectorStoreManager:
 
     def __repr__(self):
         return f"VectorStoreManager():{self.chroma_client}"
+
+    def persist(self):
+        """Persist the underlying ChromaDB client to disk."""
+        if hasattr(self.chroma_client, "persist"):
+            self.chroma_client.persist()
 
     def get_store(self, name: str) -> Optional[VectorStore]:
         try:
@@ -248,5 +256,17 @@ class CorpusLoaderService:
         document = loader.load()
         store.add(document)
         print(f"Pages from `{pdf_path}` added!")
+
+        return store
+
+    def load_games(self, store_name: str, directory: str) -> VectorStore:
+        """Load a directory of JSON game files into a vector store."""
+        store = self.manager.get_or_create_store(store_name)
+        print(f"VectorStore `{store_name}` ready!")
+
+        loader = JSONGameLoader(directory)
+        corpus = loader.load()
+        store.add(corpus)
+        print(f"{len(corpus)} game documents added!")
 
         return store
