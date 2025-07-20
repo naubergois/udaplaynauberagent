@@ -1,6 +1,14 @@
 from typing import List, Optional, Dict, Any
-from pydantic import BaseModel
-from openai import OpenAI
+try:
+    from pydantic import BaseModel
+except ImportError:  # pragma: no cover - fallback for environments without pydantic
+    class BaseModel:
+        pass
+
+try:
+    from openai import OpenAI
+except Exception:  # pragma: no cover - fallback when openai is unavailable
+    OpenAI = None
 from lib.messages import (
     AnyMessage,
     TokenUsage,
@@ -21,7 +29,10 @@ class LLM:
     ):
         self.model = model
         self.temperature = temperature
-        self.client = OpenAI(api_key=api_key) if api_key else OpenAI()
+        if OpenAI is not None:
+            self.client = OpenAI(api_key=api_key) if api_key else OpenAI()
+        else:  # pragma: no cover - openai not installed
+            self.client = None
         self.tools: Dict[str, Tool] = {
             tool.name: tool for tool in (tools or [])
         }
@@ -55,6 +66,9 @@ class LLM:
     def invoke(self, 
                input: str | BaseMessage | List[BaseMessage],
                response_format: BaseModel = None,) -> AIMessage:
+        if self.client is None:
+            raise RuntimeError("OpenAI client is not available")
+
         messages = self._convert_input(input)
         payload = self._build_payload(messages)
         if response_format:
@@ -75,6 +89,6 @@ class LLM:
 
         return AIMessage(
             content=message.content,
-            tool_calls=message.tool_calls,
+            tool_calls=getattr(message, "tool_calls", None),
             token_usage=token_usage
         )

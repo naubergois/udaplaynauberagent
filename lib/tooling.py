@@ -6,7 +6,11 @@ from typing import (
     get_type_hints, get_origin, get_args,
 )
 from functools import wraps
-from openai.types.chat.chat_completion_message_tool_call import ChatCompletionMessageToolCall
+try:
+    from openai.types.chat.chat_completion_message_tool_call import ChatCompletionMessageToolCall
+except Exception:  # pragma: no cover - openai may not be installed
+    class ChatCompletionMessageToolCall:
+        pass
 
 
 # Type alias for OpenAI's tool call implementation

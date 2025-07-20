@@ -1,7 +1,13 @@
 import json
 from typing import Any, Type
 from abc import ABC, abstractmethod
-from pydantic import BaseModel
+try:
+    from pydantic import BaseModel
+except ImportError:  # pragma: no cover - fallback when pydantic is missing
+    class BaseModel:
+        def __init__(self, **data):
+            for k, v in data.items():
+                setattr(self, k, v)
 
 from lib.messages import AIMessage
 
