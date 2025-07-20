@@ -20,6 +20,10 @@ except ImportError:  # pragma: no cover - fallback when pydantic is missing
             return self.__dict__
 try:
     import chromadb
+    if not hasattr(chromadb, "PersistentClient"):
+        # Handle case where a local directory named 'chromadb' shadows the
+        # actual package or an outdated version is installed.
+        chromadb = None
 except ImportError:  # pragma: no cover - allow running without chromadb
     chromadb = None
 from lib.tooling import tool
