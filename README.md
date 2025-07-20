@@ -1,5 +1,7 @@
 # UdaPlay - AI Game Research Agent Project
 
+![UdaPlay Logo](logo.png)
+
 ## Project Scenario
 
 You’ve been hired as an AI Engineer at a gaming analytics company developing an assistant called UdaPlay. Executives, analysts, and gamers want to ask natural language questions like:
