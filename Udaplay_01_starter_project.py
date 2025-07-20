@@ -9,8 +9,11 @@ data_dir = "games"
 if not os.path.exists(data_dir):
     raise FileNotFoundError(f"Diretório '{data_dir}' não encontrado.")
 
-# Inicializa o cliente e o embedding local
-embedding_fn = SentenceTransformerEmbeddingFunction(model_name="all-MiniLM-L6-v2")
+# Inicializa o cliente e coleção do Chroma
+embedding_fn = embedding_functions.OpenAIEmbeddingFunction(
+    api_key=os.getenv("OPENAI_API_KEY"),  # ou use diretamente a chave como string
+    model_name="text-embedding-ada-002"
+)
 client = chromadb.Client()
 collection = client.get_or_create_collection(name="games", embedding_function=embedding_fn)
 

@@ -151,29 +151,28 @@ class VectorStoreManager:
     Factory and lifecycle manager for ChromaDB vector stores.
     
     This class handles the creation, configuration, and management of ChromaDB
-    collections with OpenAI embeddings. It provides a centralized way to manage
+    collections with local sentence-transformer embeddings. It provides a centralized way to manage
     multiple vector stores within an application, handling the underlying ChromaDB
     client and embedding function configuration.
     
     Key responsibilities:
     - ChromaDB client initialization and management
-    - OpenAI embedding function configuration
+    - SentenceTransformer embedding configuration
     - Vector store creation with consistent settings
     - Store lifecycle management (create, get, delete)
     """
 
-    def __init__(self, openai_api_key: str, persist_directory: str | None = None):
+    def __init__(self, persist_directory: str | None = None, model_name: str = "all-MiniLM-L6-v2"):
         if persist_directory:
             self.chroma_client = chromadb.PersistentClient(path=persist_directory)
         else:
             self.chroma_client = chromadb.Client()
-        self.embedding_function = self._create_embedding_function(openai_api_key)
+        self.embedding_function = self._create_embedding_function(model_name)
 
-    def _create_embedding_function(self, api_key: str) -> EmbeddingFunction:
-        embeddings_fn = embedding_functions.OpenAIEmbeddingFunction(
-            api_key=api_key
+    def _create_embedding_function(self, model_name: str) -> EmbeddingFunction:
+        return embedding_functions.SentenceTransformerEmbeddingFunction(
+            model_name=model_name
         )
-        return embeddings_fn
 
     def __repr__(self):
         return f"VectorStoreManager():{self.chroma_client}"
