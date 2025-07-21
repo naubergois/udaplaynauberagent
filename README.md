@@ -140,6 +140,28 @@ After completing the basic implementation, you can enhance your agent with:
 - Long-term memory capabilities
 - Additional tools and capabilities
 
+## Library Overview
+
+The `lib/` directory now contains a complete reference implementation used by
+the notebooks and the Streamlit demo. The main modules are:
+
+- `llm.py` – wrapper around the OpenAI client with tool support
+- `messages.py` – typed message classes (system, user, assistant and tool)
+- `tooling.py` – `@tool` decorator to expose Python functions as tools
+- `state_machine.py` – generic state machine driving agent workflows
+- `documents.py` and `loaders.py` – helpers for handling documents and PDFs/JSON
+- `vector_db.py` – ChromaDB convenience layer for storing and querying vectors
+- `rag.py` – Retrieval-Augmented Generation pipeline built on the state machine
+- `game_tools.py` – tools for querying games, evaluating results and web search
+- `game_agent.py` – example agent orchestrating retrieval, evaluation and search
+- `memory.py` – short-term session memory and vector-based long-term memory
+- `evaluation.py` – framework for scoring agent runs and responses
+- `agents.py` – generic agent class with conversation history and tool calls
+- `streamlit_app.py` – simple UI for asking questions and inspecting the run
+
+These modules demonstrate how to build a production-ready research agent and
+can serve as templates for your own projects.
+
 ## Notes
 - Make sure to implement proper error handling
 - Follow best practices for API key management
