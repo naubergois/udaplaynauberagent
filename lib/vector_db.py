@@ -168,7 +168,8 @@ class VectorStoreManager:
         if chromadb is None:  # pragma: no cover - dependency unavailable
             raise ImportError("chromadb package is required")
 
-        server_url = os.getenv("CHROMA_URL")
+        server_url = os.getenv("CHROMA_URL", "http://localhost:8000")
+
         if server_url:
             try:
                 from urllib.parse import urlparse

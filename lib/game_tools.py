@@ -2,6 +2,9 @@ from __future__ import annotations
 import os
 import json
 from typing import List, Dict
+from sentence_transformers import SentenceTransformer
+from lib.tooling import tool
+
 try:
     from pydantic import BaseModel
 except ImportError:  # pragma: no cover - fallback when pydantic is missing
@@ -26,32 +29,49 @@ try:
         chromadb = None
 except ImportError:  # pragma: no cover - allow running without chromadb
     chromadb = None
-from lib.tooling import tool
+
 
 # We expect the vector DB to be persisted in ./chromadb and the collection named 'udaplay'
+
+
+
+
+
+import chromadb
+from chromadb.config import Settings
 
 @tool(name="retrieve_game", description="Semantic search: Finds most results in the vector DB")
 def retrieve_game(query: str) -> List[Dict]:
     """Search game information from the local vector database."""
-    if chromadb is None:  # pragma: no cover - dependency unavailable
-        return []
+    print("🔍 Iniciando busca por:", query)
 
-    server_url = os.getenv("CHROMA_URL")
-    if server_url:
-        try:
-            from urllib.parse import urlparse
-            parsed = urlparse(server_url)
-            host = parsed.hostname or "localhost"
-            port = parsed.port or 8000
-            client = chromadb.HttpClient(host=host, port=port, ssl=parsed.scheme == "https")
-        except Exception:
-            client = chromadb.HttpClient(server_url)
-    else:
-        client = chromadb.PersistentClient(path="chromadb")
-    collection = client.get_collection("udaplay")
-    result = collection.query(query_texts=[query], n_results=3, include=["documents", "metadatas"])
+    # 🔌 Conectar ao ChromaDB
+    server_url = os.getenv("CHROMA_URL", "http://localhost:8000")
+    from urllib.parse import urlparse
+    parsed = urlparse(server_url)
+    host = parsed.hostname or "localhost"
+    port = parsed.port or 8000
+    use_ssl = parsed.scheme == "https"
+
+    chroma_client = chromadb.HttpClient(host=host, port=port, ssl=use_ssl)
+
+    # 🧱 Recuperar a coleção
+    collection = chroma_client.get_or_create_collection(name="udaplay")
+
+    # 🤖 Gerar embedding com modelo local
+    modelo_local = SentenceTransformer("all-MiniLM-L6-v2")
+    query_embedding = modelo_local.encode([query])[0].tolist()
+
+    # 🔎 Realizar a busca com o embedding gerado
+    result = collection.query(
+        query_embeddings=[query_embedding],
+        n_results=3,
+        include=["documents", "metadatas"]
+    )
+
     documents = result.get("documents", [[]])[0]
     metadatas = result.get("metadatas", [[]])[0]
+
     games = []
     for doc, meta in zip(documents, metadatas):
         game = {
@@ -61,7 +81,10 @@ def retrieve_game(query: str) -> List[Dict]:
             "Description": meta.get("Description"),
         }
         games.append(game)
+
+    print(f"✅ Resultados encontrados: {len(games)}")
     return games
+
 
 class EvaluationReport(BaseModel):
     useful: bool
