@@ -13,7 +13,7 @@ if importlib.util.find_spec("pysqlite3") is not None:
     import pysqlite3
     sys.modules["sqlite3"] = sys.modules.pop("pysqlite3")
 
-# 🔐 Carrega variáveis do .env (especialmente OPENAI_API_KEY)
+# 🔐 Carrega variáveis do .env
 load_dotenv()
 
 # 📁 Diretório de persistência do ChromaDB
@@ -41,10 +41,9 @@ data_dir = "games"
 if not os.path.exists(data_dir):
     raise FileNotFoundError(f"❌ Diretório '{data_dir}' não encontrado.")
 
-# 🧠 Define função de embedding via OpenAI
-embedding_fn = embedding_functions.OpenAIEmbeddingFunction(
-    api_key=os.getenv("OPENAI_API_KEY"),
-    model_name="text-embedding-ada-002"
+# 🧠 Define função de embedding local
+embedding_fn = embedding_functions.SentenceTransformerEmbeddingFunction(
+    model_name="all-MiniLM-L6-v2"
 )
 
 # 🧱 Cria coleção com a função de embedding explícita (ESSENCIAL!)
