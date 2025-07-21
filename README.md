@@ -48,7 +48,7 @@ UdaPlay is an AI-powered research agent for the video game industry. This projec
 In this part, you'll build a Vector Database using ChromaDB to store and retrieve video game information efficiently.
 
  - Set up ChromaDB as a persistent client
- - Create a collection using `embedding_functions.OpenAIEmbeddingFunction` for embeddings
+ - Create a collection using `embedding_functions.SentenceTransformerEmbeddingFunction` for embeddings
 - Process and index game data from JSON files
 - Each game document contains:
   - Name
@@ -83,7 +83,7 @@ TAVILY_API_KEY="YOUR_KEY"
 CHROMA_URL="http://localhost:8000"
 ```
 ### Project Dependencies
-ChromaDB now relies on OpenAI embeddings, so `OPENAI_API_KEY` must be configured.
+ChromaDB now uses local `SentenceTransformer` embeddings. `OPENAI_API_KEY` is still required for the agent's LLM.
 - Python 3.11+
 - ChromaDB
 - OpenAI
