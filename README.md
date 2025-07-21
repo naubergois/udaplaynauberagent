@@ -41,6 +41,7 @@ In this project, you will build an AI Research Agent called UdaPlay designed to 
 
 ## Project Overview
 UdaPlay is an AI-powered research agent for the video game industry. This project is divided into two main parts that will help you build a sophisticated AI agent capable of answering questions about video games using both local knowledge and web searches.
+A short demonstration video (`udaplay.mp4`) is included in this repository.
 
 ## Project Structure
 
@@ -163,6 +164,7 @@ These modules demonstrate how to build a production-ready research agent and
 can serve as templates for your own projects.
 
 ## Notes
+- Web search functionality is still under development
 - Make sure to implement proper error handling
 - Follow best practices for API key management
 - Document your code thoroughly
